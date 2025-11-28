@@ -1,7 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime, func
-from sqlalchemy.ext.declarative import declarative_base
 
-Base = declarative_base()
+from knowledge_vault.utils.database import Base
 
 class User(Base):
     __tablename__ = "users"
