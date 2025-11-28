@@ -9,4 +9,4 @@ Base = declarative_base()
 
 url = os.getenv("DATABASE_URL")
 engine = create_engine(url, echo=True)
-SessionLocal = sessionmaker(bind=engine)
+db = sessionmaker(bind=engine)
