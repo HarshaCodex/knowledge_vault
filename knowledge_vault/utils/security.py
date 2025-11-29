@@ -8,9 +8,9 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 def create_user(username, email, password):
     db = SessionLocal()
     try:
-        user = db.query(User).filter(User.username == username).first()
+        user = db.query(User).filter(User.email == email).first()
         if user:
-            print(f"{username} already exists!!!")
+            print(f"{email} already exists!!!")
             return False
 
         hashed_password = pwd_context.hash(password)
