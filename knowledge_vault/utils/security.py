@@ -4,7 +4,6 @@ from knowledge_vault.models.user import User
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-
 def create_user(username, email, password):
     db = SessionLocal()
     try:
@@ -20,5 +19,17 @@ def create_user(username, email, password):
         db.refresh(new_user)
         print(f"{username} created successfully!!!")
         return True
+    finally:
+        db.close()
+
+def login(email, password):
+    db = SessionLocal()
+    try:
+        user = db.query(User).filter(User.email == email).first()
+        if user and pwd_context.verify(password, user.password_hash):
+            print(f"{user.username} logged in successfully!!!")
+            return True
+        else:
+            raise Exception("Login failed, please check again!!!")
     finally:
         db.close()
