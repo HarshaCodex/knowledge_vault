@@ -27,8 +27,7 @@ def login(email, password):
     try:
         user = db.query(User).filter(User.email == email).first()
         if user and pwd_context.verify(password, user.password_hash):
-            print(f"{user.username} logged in successfully!!!")
-            return True
+            return user
         else:
             raise Exception("Login failed, please check again!!!")
     finally:

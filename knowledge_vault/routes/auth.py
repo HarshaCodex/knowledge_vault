@@ -1,9 +1,20 @@
+from datetime import datetime, timedelta
+from dotenv import load_dotenv
 from fastapi import APIRouter
+import jwt
 
 from knowledge_vault.models.user import User
 from knowledge_vault.utils.security import create_user, login
-from knowledge_vault.models.schemas import UserCreate, UserResponse, UserLogin
+from knowledge_vault.models.schemas import Token, UserCreate, UserResponse, UserLogin
 from knowledge_vault.utils.database import db as SessionLocal
+
+import os
+
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET")
+ALGORITHM = os.getenv("ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60))
 
 router = APIRouter()
 
@@ -23,9 +34,16 @@ def add_user(user: UserCreate):
 @router.post("/auth/login")
 def login_user(user: UserLogin):
     try:
-        login_success = login(user.email, user.password)
-        if login_success:
-            return {"message": "Login successful"}
+        login_user = login(user.email, user.password)
+        if login_user:
+            jwt_request = {
+                "sub": str(login_user.id),
+                "username": login_user.username,
+                "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
+                "iat": datetime.utcnow()
+            }
+            token = jwt.encode(jwt_request, SECRET_KEY, algorithm=ALGORITHM)
+            return Token(access_token=token, token_type="bearer")
         else:
             return {"message": "Login failed"}
     except Exception as e:
