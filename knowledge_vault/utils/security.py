@@ -11,7 +11,7 @@ def create_user(username, email, password):
         user = db.query(User).filter(User.email == email).first()
         if user:
             print(f"{email} already exists!!!")
-            return False
+            raise Exception(f"User already exists with the email: {email}")
 
         hashed_password = pwd_context.hash(password)
         new_user = User(username=username, email=email, password_hash=hashed_password)

@@ -6,8 +6,11 @@ router = APIRouter()
 
 @router.post("/auth/add-user")
 def add_user(user: UserCreate):
-    created = create_user(user.username, user.email, user.password)
-    if created:
-        return {"message": "User created successfully"}
-    else:
-        return {"message": "User creation failed"}
+    try:
+        created = create_user(user.username, user.email, user.password)
+        if created:
+            return {"message": "User created successfully"}
+        else:
+            return {"message": "User creation failed"}
+    except Exception as e:
+        return {"message": str(e)}
