@@ -16,9 +16,9 @@ SECRET_KEY = os.getenv("SECRET")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60))
 
-router = APIRouter()
+auth_router = APIRouter()
 
-@router.post("/auth/add-user")
+@auth_router.post("/add-user")
 def add_user(user: UserCreate):
     try:
         db = SessionLocal()
@@ -31,7 +31,7 @@ def add_user(user: UserCreate):
     except Exception as e:
         return {"message": str(e)}
 
-@router.post("/auth/login")
+@auth_router.post("/login")
 def login_user(user: UserLogin):
     try:
         login_user = login(user.email, user.password)
