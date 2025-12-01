@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from fastapi.security import OAuth2PasswordBearer
 import jwt
 
 from knowledge_vault.models.user import User
@@ -17,6 +18,8 @@ ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60))
 
 auth_router = APIRouter()
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 @auth_router.post("/add-user")
 def add_user(user: UserCreate):
@@ -48,3 +51,16 @@ def login_user(user: UserLogin):
             return {"message": "Login failed"}
     except Exception as e:
         return {"message": str(e)}
+
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    db = SessionLocal()
+    try:
+        user_data = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user = db.query(User).get(user_data.get("sub"))
+        if user is None:
+            raise Exception("User not found")
+        return user
+    except jwt.ExpiredSignatureError:
+        raise Exception("Token has expired")
+    except jwt.InvalidTokenError:
+        raise Exception("Invalid token")
