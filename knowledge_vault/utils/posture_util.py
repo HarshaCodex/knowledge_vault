@@ -4,7 +4,8 @@ import numpy as np
 from mediapipe.python.solutions.pose import Pose
 from mediapipe.python.solutions.pose import PoseLandmark
 
-from knowledge_vault.models.schemas import Posture
+from knowledge_vault.models.user import User
+from knowledge_vault.models.posture import Posture
 
 def load_pose_model() -> Pose:
     mp_pose = mp.solutions.pose
@@ -47,7 +48,7 @@ def _calculate_angle(a, b, c):
 
     return angle
 
-def detect_posture(landmarks):
+def detect_posture(landmarks, current_user: User):
     issues = []
     score = 100
 
@@ -72,4 +73,4 @@ def detect_posture(landmarks):
 
     status = "good" if not issues else "bad"
 
-    return Posture(status=status, issues=issues, score=score)
+    return Posture(user_id=current_user.id, status=status, issues=issues, score=score)

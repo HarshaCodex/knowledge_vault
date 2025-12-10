@@ -8,6 +8,7 @@ from sqlalchemy import pool
 from alembic import context
 from knowledge_vault.utils.database import Base
 from knowledge_vault.models.user import User
+from knowledge_vault.models.posture import Posture
 
 load_dotenv()
 
