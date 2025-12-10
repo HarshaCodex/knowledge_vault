@@ -1,15 +1,15 @@
+import os
 from datetime import datetime, timedelta
+
+import jwt
 from dotenv import load_dotenv
 from fastapi import APIRouter, Depends
-from fastapi.security import OAuth2PasswordBearer
-import jwt
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
+from knowledge_vault.models.schemas import Token, UserCreate, UserResponse
 from knowledge_vault.models.user import User
-from knowledge_vault.utils.security import create_user, login
-from knowledge_vault.models.schemas import Token, UserCreate, UserResponse, UserLogin
 from knowledge_vault.utils.database import db as SessionLocal
-
-import os
+from knowledge_vault.utils.security import create_user, login
 
 load_dotenv()
 
@@ -35,9 +35,9 @@ def add_user(user: UserCreate):
         return {"message": str(e)}
 
 @auth_router.post("/login")
-def login_user(user: UserLogin):
+def login_user(form_data: OAuth2PasswordRequestForm = Depends()):
     try:
-        login_user = login(user.email, user.password)
+        login_user = login(email=form_data.username, password=form_data.password)
         if login_user:
             jwt_request = {
                 "sub": str(login_user.id),

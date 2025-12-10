@@ -6,7 +6,6 @@ from mediapipe.python.solutions.pose import PoseLandmark
 
 from knowledge_vault.models.schemas import Posture
 
-
 def load_pose_model() -> Pose:
     mp_pose = mp.solutions.pose
     
