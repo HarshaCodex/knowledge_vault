@@ -24,3 +24,8 @@ class UserResponse(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+class Posture(BaseModel):
+    status: str
+    issues: list[str]
+    score: int
