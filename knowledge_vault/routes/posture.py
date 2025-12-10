@@ -19,19 +19,10 @@ async def posture_analyze(image: UploadFile = File(...), current_user: User = De
         posture = detect_posture(posture_landmarks, current_user)
 
         if posture:
-            saved_posture = db.query(Posture).filter(Posture.user_id == posture.user_id).first()
-            if not saved_posture:
-                db.add(posture)
-                db.commit()
-                db.refresh(posture)
-                return posture
-            else:
-                saved_posture.score = posture.score
-                saved_posture.status = posture.status
-                saved_posture.issues = posture.issues
-                db.commit()
-                db.refresh(saved_posture)
-                return saved_posture
+            db.add(posture)
+            db.commit()
+            db.refresh(posture)
+            return posture
         else:
             raise Exception("Posture analysis failed")
 
